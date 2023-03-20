@@ -1,3 +1,4 @@
-Tabby
-Tortoishell
+Persian
+Sphynx
 Tuxedo
+Ragdoll
