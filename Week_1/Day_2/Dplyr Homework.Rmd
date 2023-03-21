@@ -1,0 +1,267 @@
+---
+title: "dplyr homework"
+output: html_notebook
+---
+
+
+```{r}
+library(CodeClanData)
+drinks_content
+```
+Question 1. Load in the dataset and have a look at it. What are the dimensions, variable types, variable names, etc.?
+
+```{r}
+dim(drinks_content)
+```
+```{r}
+class(drinks_content)
+```
+
+```{r}
+names(drinks_content)
+```
+or
+
+```{r}
+glimpse(drinks_content)
+```
+Question 2. Let’s first investigate the calories of different drinks. Select the variables Beverage_category, Beverage, Beverage prep and Calories from your data. Since we are interested in the calorie content, check if there are any NA values in the data, and drop them if there are.
+
+```{r}
+drinks_content %>% 
+  select(Beverage_category, Beverage, Beverage_prep, Calories,) %>% 
+  filter(Calories != "NA")
+```
+
+
+Question 3. Create a new variable (column) called calorie_diff, which stores the difference between 135 calories (135 calories = 10 cubes of sugar!) and the calories in each drink. (hint: you’ll want to subtract 135 from the calories to see which drink have more or less than 10 cups of sugar).
+
+```{r}
+drinks_content %>% 
+  mutate(Calorie_diff = Calories - 135)
+```
+
+Question 4. Summarise the mean number of calories in each beverage_category. Which 3 category of drinks have the most calories? Which 3 drinks have the least? Write a small summary of your findings.
+
+```{r}
+  filter(drinks_content, Beverage_category == "Coffee") 
+  
+```
+```{r}
+filter(drinks_content, Beverage_category == "Coffee") %>% 
+summarise(mean_coffee_calorie = mean(Calories))
+```
+
+```{r}
+filter(drinks_content, Beverage_category == "Classic Espresso Drinks") 
+```
+
+
+```{r}
+filter(drinks_content, Beverage_category == "Classic Espresso Drinks") %>% summarise(mean_ced_calorie = mean(Calories)) 
+```
+
+```{r}
+filter(drinks_content, Beverage_category == "Signature Espresso Drinks")
+```
+
+```{r}
+filter(drinks_content, Beverage_category == "Signature Espresso Drinks") %>% 
+summarise(mean_sed_calorie = mean(Calories)) 
+```
+
+
+```{r}
+filter(drinks_content, Beverage_category == "Tazo® Tea Drinks")
+```
+
+```{r}
+filter(drinks_content, Beverage_category == "Tazo® Tea Drinks") %>% 
+summarise(mean_tazo_calorie = mean(Calories))
+```
+
+
+```{r}
+filter(drinks_content, Beverage_category == "Shaken Iced Beverages")
+```
+
+```{r}
+filter(drinks_content, Beverage_category == "Shaken Iced Beverages") %>% 
+summarise(mean_sib_calorie = mean(Calories))
+```
+
+```{r}
+filter(drinks_content, Beverage_category == "Smoothies")
+```
+
+```{r}
+filter(drinks_content, Beverage_category == "Smoothies") %>% 
+  summarise(mean_smoo_calorie = mean(Calories))
+```
+
+```{r}
+filter(drinks_content, Beverage_category == "Frappuccino® Blended Coffee") 
+```
+
+```{r}
+filter(drinks_content, Beverage_category == "Frappuccino® Blended Coffee") %>% summarise(mean_fbc_calorie = mean(Calories))
+```
+
+```{r}
+filter(drinks_content, Beverage_category == "Frappuccino® Light Blended Coffee")
+```
+
+```{r}
+filter(drinks_content, Beverage_category == "Frappuccino® Light Blended Coffee") %>% 
+  summarise(mean_flbc_calorie = mean(Calories))
+```
+
+```{r}
+filter(drinks_content, Beverage_category == "Frappuccino® Blended Crème")
+```
+
+```{r}
+filter(drinks_content, Beverage_category == "Frappuccino® Blended Crème") %>% 
+  summarise(mean_fbcr_calorie = mean(Calories))
+```
+# Average number of calories in Beverage_catagory
+
+Coffee - 4.25
+Classic Espresso Drinks - 140.1724
+Signature Espresso Drinks - 250
+Tazo® Tea Drinks - 177.3077
+Shaken Iced Beverages - 114.4444
+Smoothies - 282.2222
+Frappuccino® Blended Coffee - 276.9444
+Frappuccino® Light Blended Coffee - 162.5
+Frappuccino® Blended Crème - 233.0796
+
+most cal - Smoothies, Frappuccino® Blended Coffee, Signature Espresso Drinks
+
+```{r}
+drinks_content %>% 
+  select(Beverage, Calories) %>% 
+  arrange(desc(Calories))
+```
+
+
+least cal - Tazo® Tea
+
+
+Question 5. Let’s look at this a different way. What is the average number of calories in each Beverage_prep type?
+
+```{r}
+drinks_content %>% 
+  select(Beverage, Beverage_prep, Calories) %>% 
+  arrange(Beverage_prep, desc(Calories))
+```
+
+
+
+```{r}
+filter(drinks_content, Beverage_prep == "2% Milk")
+```
+
+```{r}
+filter(drinks_content, Beverage_prep == "2% Milk") %>% 
+summarise(mean_2 = mean(Calories))
+```
+```{r}
+filter(drinks_content, Beverage_prep == "Doppio") %>% 
+summarise(mean_D = mean(Calories))
+```
+
+```{r}
+filter(drinks_content, Beverage_prep == "Grande") %>% 
+summarise(mean_Gra = mean(Calories))
+```
+
+```{r}
+filter(drinks_content, Beverage_prep == "Grande Nonfat Milk") %>% 
+summarise(mean_gnf = mean(Calories))
+```
+
+```{r}
+filter(drinks_content, Beverage_prep == "Short") %>% 
+summarise(mean_S = mean(Calories))
+```
+
+```{r}
+filter(drinks_content, Beverage_prep == "Short Nonfat Milk") %>% 
+summarise(mean_snfm= mean(Calories))
+```
+
+```{r}
+filter(drinks_content, Beverage_prep == "Solo") %>% 
+summarise(mean_solo = mean(Calories))
+```
+
+```{r}
+filter(drinks_content, Beverage_prep == "Soymilk") %>% 
+summarise(mean_soy = mean(Calories))
+```
+
+```{r}
+filter(drinks_content, Beverage_prep == "Tall") %>% 
+summarise(mean_T = mean(Calories))
+```
+
+```{r}
+filter(drinks_content, Beverage_prep == "Tall Nonfat Milk") %>% 
+summarise(mean_Tnm = mean(Calories))
+```
+```{r}
+filter(drinks_content, Beverage_prep == "Venti") %>% 
+summarise(mean_V = mean(Calories))
+```
+
+
+```{r}
+filter(drinks_content, Beverage_prep == "Venti Nonfat Milk") %>% 
+summarise(mean_Vnm = mean(Calories))
+```
+
+
+
+
+```{r}
+filter(drinks_content, Beverage_prep == "Whole Milk") %>% 
+summarise(mean_W = mean(Calories))
+```
+# Average number of callories in Beverage_prep
+
+2% Milk - 218
+Doppio - 10
+Grande - 85.71429
+Grande Nonfat Milk - 209.6154
+Short - 37
+Short Nonfat Milk - 99.16667
+Solo - 5
+Soymilk - 207.2727
+Tall - 63.42875
+Tall Nonfat Milk - 147.8261
+Venti - 118.5714
+Venti Nonfat Milk - 266
+Whole Milk - 283.75
+
+Question 6. Which Beverage_prep type contains more than the average calories of all drinks?
+
+```{r}
+drinks_content %>% 
+  summarise(average_cal = mean(Calories))
+```
+
+2% Milk, Grande Nonfat Milk, Soymilk, Venti Nonfat Milk & Whole Milk
+
+Question 7. Which is the best type of coffee drink (and by ‘drink’ we mean the combination of Beverage_category, Beverage and Beverage_prep) to get if you’re worried about consuming too many calories?
+
+
+Beverage_category - Coffee
+
+Beverage - Tazo® Tea
+
+Beverage_prep - Solo
+
+
+# Sorry this is all a dog's dinner!!! 
+
