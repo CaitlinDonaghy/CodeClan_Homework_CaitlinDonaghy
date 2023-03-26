@@ -1,0 +1,203 @@
+---
+title: "dplyr weekend homework "
+output: html_notebook
+---
+
+- Library calls.
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(janitor)
+```
+
+- Reading in data.
+
+```{r}
+books <- read.csv("books.csv")
+```
+
+- Checking the data.
+
+```{r}
+nrow(books)
+ncol(books)
+--------------------------------------------------------------------------------
+dim(books)
+names(books)
+--------------------------------------------------------------------------------
+glimpse(books)
+```
+
+- Choosing which variables to keep and assigning them to 'books_info'.
+
+```{r}
+books_info <- books %>% 
+ select(title:average_rating, language_code:publisher)  
+
+#view(books_info)
+```
+
+- Checking for missing values in 'ratings' variable.
+
+```{r}
+books_info %>% 
+  filter(is.na(average_rating))
+
+--------------------------------------------------------------------------------
+
+books_info %>% 
+  summarise(count = sum(is.na(average_rating)))
+```
+
+- Changing the missing values in the 'average_ratings' for the median rating
+
+```{r}
+average_rating_imputed_median <- books_info %>%
+    mutate(average_rating = coalesce(average_rating, 
+                                     median(average_rating, na.rm = TRUE)))
+--------------------------------------------------------------------------------
+#view(average_rating_imputed_median)
+```
+
+- Which authors are the most prolific within this dataset?
+
+```{r}
+average_rating_imputed_median %>% 
+  group_by(authors) %>% 
+  count(authors) %>% 
+  arrange(desc(n)) %>% 
+  head(10)
+```
+
+- Adding logical variable for whether or not the author appears on the list for more than one book. 
+
+```{r}
+average_rating_imputed_median %>% 
+  group_by(authors) %>% 
+  count(authors) %>% 
+  mutate(n > 1) 
+```
+
+- Authors, who are the highest rated authors? 
+
+```{r}
+average_rating_imputed_median %>%  
+  group_by(authors) %>% 
+  summarise(av_rating = mean(average_rating)) %>% 
+  arrange(desc(av_rating)) 
+```
+
+```{r}
+average_rating_imputed_median %>%  
+  group_by(authors) %>% 
+  summarise(av_rating = mean(average_rating)) %>%
+  arrange(desc(av_rating)) %>% 
+  filter(av_rating == 5)
+```
+* There are 18 authors who all have an average rating of 5.
+
+- Who are the lowest rated authors?
+
+```{r}
+average_rating_imputed_median %>%  
+  group_by(authors) %>% 
+  summarise(av_rating = mean(average_rating)) %>% 
+  arrange(av_rating) 
+```
+
+* I have done something wrong with the imputing missing values with median, not sure what sorry! Going to try and remove titles which do not have a rating instead.
+
+- Assigning the data back to 'books_info' as i couldn't get 'average_rating_imputed_median' to work as desired.
+
+```{r}
+books_info <- average_rating_imputed_median
+```
+
+- Trying to idetity the type of variable 'average_rating' is in order to change it to 'character' so I can change it to 'character'. I want to do this as I am trying to replace all '0.000' ratings with 'NA' in order to use `drop_na()`. This would allow me to have a fairer representation of the lowest rated authors.
+
+```{r}
+books_info %>% 
+class(av_rating)
+
+books_info %>% 
+mutate('av_rating' = as.character('av_rating'))
+
+--------------------------------------------------------------------------------
+
+ books_info %>% 
+  mutate(av_rating = na_if(av_rating, "0.000")) 
+  
+# I can't get this to work, going to try filter the 0s out instead.  
+```
+
+
+```{r}
+ratings_above_zero <- books_info %>% 
+  filter(average_rating > 0) 
+--------------------------------------------------------------------------------
+#view(ratings_above_zero)
+```
+
+```{r}
+ratings_above_zero %>% 
+  arrange(average_rating)
+
+--------------------------------------------------------------------------------
+  
+ratings_above_zero %>%  
+  group_by(authors) %>% 
+  summarise(av_rating = mean(average_rating)) %>% 
+  arrange(av_rating) %>% 
+  slice_max(av_rating, n = 10)
+```
+
+
+- I am now going to try and find out what is the average rating for all books and which book is the most reviewed on the list.
+
+```{r}
+books_info %>% 
+  summarise(overall_average_rating = mean(average_rating)) %>% 
+  pull()
+```
+
+- Next I would like to see the most rated book
+
+```{r}
+ books_info %>% 
+  arrange(desc(ratings_count)) %>% 
+  slice_head()
+```
+- I would also like to see which book has been reviewed with text the most often
+
+```{r}
+books_info %>% 
+  arrange(desc(text_reviews_count)) %>% 
+  slice_head()
+```
+* Both the same book.
+
+- Next I would like to see which publisher has the most books on the list and which publisher has the highest overall 'average_rating'
+
+```{r}
+by_publisher <- books_info %>% 
+  group_by(publisher) 
+
+view(by_publisher)
+```
+
+
+```{r}
+by_publisher %>% 
+  count(publisher) %>% 
+  arrange(desc(n)) %>% 
+  head(10) 
+```
+
+```{r}
+by_publisher %>% 
+  group_by(publisher) %>% 
+  summarise(pub_av_rating = mean(average_rating)) %>% 
+  arrange(desc(pub_av_rating)) 
+```
+
